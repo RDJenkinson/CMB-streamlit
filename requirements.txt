@@ -1,0 +1,6 @@
+streamlit
+camb
+numpy
+matplotlib
+astropy
+requests
