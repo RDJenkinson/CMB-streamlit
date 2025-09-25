@@ -154,11 +154,18 @@ Omega_L = st.sidebar.slider("", min_value=0.0, max_value=0.98, value=st.session_
 st.sidebar.write("")  # small gap
 lensed = st.sidebar.checkbox("Show lensed spectrum (slower)", value=st.session_state["lensed"], key="lensed")
 
-# Reset button
-if st.sidebar.button("Reset to defaults"):
+# ----------------------
+# Reset button implemented as a callback (safe)
+# ----------------------
+def reset_defaults():
+    # set session_state keys safely in callback
     for k, v in DEFAULTS.items():
         st.session_state[k] = v
-    st.experimental_rerun()
+    # ensure a fresh rerun so widgets pick up the new values immediately
+    #st.rerun()
+
+# attach reset via on_click callback
+st.sidebar.button("Reset to defaults", on_click=reset_defaults)
 
 st.sidebar.markdown("---")
 st.sidebar.markdown("**Notes**\n\nSliders show parameter values directly. Use the lensed checkbox to compare to Planck (slow).")
@@ -196,13 +203,13 @@ ax.errorbar(ell_planck, D_planck, yerr=err_planck, fmt="o", markersize=4,
 ax.set_xlim(2, 2000)
 ax.set_xlabel(r"$\ell$", color="white")
 ax.set_ylabel(r"$C_\ell\; [\mu\mathrm{K}^2]$", color="white")
-ax.set_title("CMB TT Power Spectrum — model vs Planck (no conversion)", color="white")
+ax.set_title("CMB TT Power Spectrum — model vs Planck data", color="white")
 
 ax.tick_params(colors="white")
 for spine in ax.spines.values():
     spine.set_color("white")
 
-ax.legend(facecolor="black", edgecolor="white", labelcolor="white")
+ax.legend(facecolor="black", edgecolor="white", labelcolor='white')
 
 # Summary box on right (derived values only)
 col1, col2 = st.columns([3, 1])
@@ -222,5 +229,4 @@ with col2:
 
 st.markdown("---")
 st.markdown("**Footer:** This app uses CAMB to compute the CMB power spectrum. For speed we reduce some accuracy settings; enable lensed for a closer match to Planck (slower).")
-
 
